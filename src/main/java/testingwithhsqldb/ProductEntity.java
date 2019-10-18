@@ -44,5 +44,8 @@ public class ProductEntity {
         this.price = price;
     }
 
+    public String toString(){
+        return "Produit id n°"+this.productId+" "+this.getName()+ " " + this.price +"$";
+    }
     
 }

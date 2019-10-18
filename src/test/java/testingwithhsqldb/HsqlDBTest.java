@@ -28,7 +28,7 @@ public class HsqlDBTest {
 		// On crée le schema de la base de test
 		executeSQLScript(myConnection, "schema.sql");
 		// On y met des données
-		executeSQLScript(myConnection, "bigtestdata.sql");		
+		executeSQLScript(myConnection, "smalltestdata.sql");		
 
             	myObject = new DAO(myDataSource);
 	}
@@ -62,7 +62,39 @@ public class HsqlDBTest {
 		String name = myObject.nameOfCustomer(-1);
 		assertNull("name should be null, customer does not exist !", name);
 	}
-
+        
+        @Test 
+        public void testAddProduct() throws SQLException{
+            ProductEntity produit = new ProductEntity(2, "TV LED", 2000);
+            myObject.addProduct(produit);
+            
+        }
+        
+        @Test (expected = SQLException.class)
+        public void testAddProductWithIdDuplicate() throws SQLException{
+            ProductEntity produit = new ProductEntity(0, "TV LED", 2000);
+            myObject.addProduct(produit);
+        }
+        
+        @Test (expected = SQLException.class)
+        public void testAddProductWithNegativePrice() throws SQLException{
+            ProductEntity produit = new ProductEntity(3, "TV LED", -2000);
+            myObject.addProduct(produit);
+        }
+        
+        
+        @Test 
+        public void testFindProduct() throws SQLException{
+            ProductEntity produit = myObject.findProduct(0);
+            assertEquals(produit.getName(), "Iron Iron");
+            assertEquals(produit.getPrice(), 54);
+        }
+        
+        @Test (expected = SQLException.class)
+        public void testFindUnknownProduct() throws SQLException{
+            myObject.findProduct(10);
+        }
+        
 	public static DataSource getDataSource() {
 		org.hsqldb.jdbc.JDBCDataSource ds = new org.hsqldb.jdbc.JDBCDataSource();
 		ds.setDatabase("jdbc:hsqldb:mem:testcase;shutdown=true");

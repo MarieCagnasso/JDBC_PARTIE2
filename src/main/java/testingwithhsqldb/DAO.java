@@ -50,12 +50,12 @@ public class DAO {
 			stmt.setString(2, p.getName());
 			stmt.setInt(3, p.getPrice());
 
-                        stmt.executeUpdate();
-
+                        stmt.executeUpdate() ;
 		} 
         }
         
         public ProductEntity findProduct(int id) throws SQLException{
+            ProductEntity result = null;
             String sql = "SELECT * FROM PRODUCT WHERE ID=?";
             try (   Connection connection = myDataSource.getConnection();
 			PreparedStatement stmt = connection.prepareStatement(sql)
@@ -64,11 +64,15 @@ public class DAO {
 			stmt.setInt(1, id);
                         
                         try (ResultSet rs = stmt.executeQuery()) {
-				rs.next(); // On a toujours exactement 1 enregistrement dans le résultat
-				ProductEntity produit = new ProductEntity(rs.getInt("ID"), rs.getString("Name"), rs.getInt("Price"));
-                                return produit;
+				if (rs.next()){
+                                    result = new ProductEntity(id, rs.getString("Name"), rs.getInt("Price"));
+                                } else {
+                                    throw new SQLException();
+                                }
+				
 			}
-		} 
+		}
+            return result;
         }
 	
 }
